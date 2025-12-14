@@ -18,17 +18,6 @@ This project implements a distributed travel booking system consisting of 6 micr
 
 ## Architecture Diagram
 
-```mermaid
-graph TD
-    User[Client] -->|POST /bookings| BookingService
-    BookingService -->|GET /users/{id}| UserService
-    BookingService -->|GET /flights/{id}| FlightService
-    BookingService -->|GET /hotels/{id}| HotelService
-    BookingService -->|POST /payments| PaymentService
-    BookingService -->|POST /notifications| NotificationService
-    BookingService -->|PUT /flights/{id}/book| FlightService
-    BookingService -->|PUT /hotels/{id}/book| HotelService
-```
 
 ## Prerequisites
 - Java 17+
