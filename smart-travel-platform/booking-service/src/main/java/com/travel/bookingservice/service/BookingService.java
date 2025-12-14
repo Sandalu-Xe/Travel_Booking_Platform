@@ -111,4 +111,16 @@ public class BookingService {
 
         return booking;
     }
+
+    public java.util.List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
+    }
+
+    public java.util.Optional<Booking> getBooking(Long id) {
+        return bookingRepository.findById(id);
+    }
+
+    public void deleteBooking(Long id) {
+        bookingRepository.deleteById(id);
+    }
 }

@@ -6,6 +6,9 @@ import com.travel.flightservice.repository.FlightRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/flights")
 public class FlightController {
@@ -16,11 +19,50 @@ public class FlightController {
         this.flightRepository = flightRepository;
     }
 
+    @PostMapping
+    public ResponseEntity<FlightDTO> createFlight(@RequestBody Flight flight) {
+        Flight savedFlight = flightRepository.save(flight);
+        return ResponseEntity.ok(mapToDTO(savedFlight));
+    }
+
+    @GetMapping
+    public List<FlightDTO> getAllFlights() {
+        return flightRepository.findAll().stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<FlightDTO> getFlight(@PathVariable Long id) {
         return flightRepository.findById(id)
                 .map(this::mapToDTO)
                 .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<FlightDTO> updateFlight(@PathVariable Long id, @RequestBody Flight flightDetails) {
+        return flightRepository.findById(id)
+                .map(flight -> {
+                    flight.setFlightNumber(flightDetails.getFlightNumber());
+                    flight.setOrigin(flightDetails.getOrigin());
+                    flight.setDestination(flightDetails.getDestination());
+                    flight.setFlightDate(flightDetails.getFlightDate());
+                    flight.setPrice(flightDetails.getPrice());
+                    flight.setAvailableSeats(flightDetails.getAvailableSeats());
+                    Flight updatedFlight = flightRepository.save(flight);
+                    return ResponseEntity.ok(mapToDTO(updatedFlight));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFlight(@PathVariable Long id) {
+        return flightRepository.findById(id)
+                .map(flight -> {
+                    flightRepository.delete(flight);
+                    return ResponseEntity.ok().<Void>build();
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -47,7 +89,6 @@ public class FlightController {
                 flight.getDestination(),
                 flight.getFlightDate(),
                 flight.getPrice(),
-                flight.getAvailableSeats()
-        );
+                flight.getAvailableSeats());
     }
 }
